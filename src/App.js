@@ -9,29 +9,47 @@ import Rectangle from './components/Rectangle.js';
 
 const App = () => {
   const [categories, setCategories] = useState([]);
-  
-  // const [message, setMessage] = useState('...loading')
 
-  // useEffect(() => {
-  //   async function fetchData () {
-  //     try {
-  //       let data = await (await fetch('/api')).json()
-  //       setMessage(data.message)
-  //     } catch (err) {
-  //       setMessage(err.message)
-  //     }
-  //   }
-  //   fetchData()
-  // })
+  const clickedStartConnectorCircle = (categoryIndex, itemIndex) => {
+    console.log("Clicked start connector circle: ", categoryIndex, " item index: ", itemIndex);
+  }
+
+  const clickedEndConnectorCircle = (categoryIndex, itemIndex) => {
+    console.log("Clicked end connector circle: ", categoryIndex, " item index: ", itemIndex);
+  }
+
+  const addItemsToCategory = (index) => {
+    console.log("Add Item to Category with Index: ", index)
+    let category = categories[index]
+
+    console.log("Category: ", category)
+    category.values.push({
+      key: '',
+      value: '',
+      startConnector: '',
+      endConnector: ''
+    })
+
+    console.log("Category: ", category)
+
+    setCategories(categories.map((item, indx) => {
+      return index === indx ? {...item} : item
+    }))
+  };
 
   return (
-    <div className="App">
+    <div className="App bg-blue-300 overflow-y-none">
       <Formik 
         initialValues={{category: ''}}
         onSubmit={(values, { setSubmitting }) => {
           console.log("Submit: ", values.category)
 
-          setCategories(categories.concat(values.category))
+          setCategories(categories.concat({
+            category: values.category,
+            values: [],
+            prev: null,
+            next: null
+          }))
           setSubmitting(false)
         }}
       >
@@ -44,7 +62,7 @@ const App = () => {
           handleSubmit,
           isSubmitting,
         }) => (
-          <div className="container mx-auto">
+          <div className="container px-10 pb-4">
           <form onSubmit={handleSubmit} 
             className="flex justify-items-start items-end">
             <div>
@@ -73,20 +91,41 @@ const App = () => {
         )}
       </Formik>
       
-      <div className="container mx-auto">
-        <ul className="my-4 flex justify-between">
-          {categories.map((category, index) => {
-            console.log("Category: ", category)
-            return (
-              <li key={index} className="flex justify-between items-center bg-blue-500 text-white w-1/2 gap-4">
-                <span className="px-4">{category}</span>
-                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                  Add
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+      <div className="w-screen h-screen bg-gray-100 overflow-x-auto">
+        <div className="container mx-10">
+          <ul className="py-4 flex justify-start gap-8">
+            {categories.map((item, index) => {
+              console.log("Item: ", item)
+
+              return (
+                <div className="w-96 bg-gray-200 rounded">
+                  <li key={index} className="flex justify-between items-center bg-blue-500 text-white rounded-t-sm">
+                    <span className="px-4">{item.category}</span>
+                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                      onClick={() => addItemsToCategory(index)}>
+                      Add
+                    </button>
+                  </li>
+                  <ul>
+                  {item.values.map((obj, objIndx) => {
+                    return <li key={`${item.category}-${index}-${objIndx}`}
+                      className="flex m-2 p-2 bg-gray-50 rounded">
+                      <div className="bg-gray-300 rounded-full w-1/5 cursor-move"
+                        onClick={() => clickedStartConnectorCircle(index, objIndx)}>
+                      </div>
+                      <div className="w-1/2">Key</div>
+                      <div className="w-1/2">Value</div>
+                      <div className="bg-gray-300 rounded-full w-1/5 cursor-move" 
+                        onClick={() => clickedEndConnectorCircle(index, objIndx)}>
+                      </div>
+                    </li>
+                  })}
+                  </ul>
+                </div>
+              )
+            })}
+          </ul>
+        </div>
       </div>
 
       {/* <Viewbox>
