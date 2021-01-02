@@ -1,21 +1,66 @@
 /* global fetch */
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Formik } from 'formik';
-import logo from './logo.svg';
+import Path from './components/Path.js';
 import './App.css';
-import Viewbox from './components/Viewbox.js';
-import Circle from './components/Circle.js';
-import Rectangle from './components/Rectangle.js';
 
 const App = () => {
+  const [points, setPoints] = useState({
+    x1: 0, y1: 0,
+    x2: 0, y2: 0
+  });
+
   const [categories, setCategories] = useState([]);
 
-  const clickedStartConnectorCircle = (categoryIndex, itemIndex) => {
-    console.log("Clicked start connector circle: ", categoryIndex, " item index: ", itemIndex);
+  // Do not create the start connector circle if the category is the first.
+  const createStartConnectorCircle = (index, objIndx) => {
+    return (
+      index > 0 
+      ?
+      <div className="bg-gray-300 rounded-full w-1/5 cursor-move"
+        onClick={(event) => clickedStartConnectorCircle(event, index, objIndx)}>
+      </div> 
+      : 
+      <></>
+    )
   }
 
-  const clickedEndConnectorCircle = (categoryIndex, itemIndex) => {
-    console.log("Clicked end connector circle: ", categoryIndex, " item index: ", itemIndex);
+  const clickedStartConnectorCircle = (event, categoryIndex, itemIndex) => {
+    console.log("Event: ", event)
+    console.log(" Clicked start connector circle: ", categoryIndex, " item index: ", itemIndex);
+  }
+
+  // Do not create the end connector circle if the category is last
+  const createEndConnectorCircle = (index, objIndx) => {
+    return (
+      index < categories.length - 1
+      ?
+      <div className="bg-gray-300 rounded-full w-1/5 cursor-move" 
+        onClick={(event) => clickedEndConnectorCircle(event, index, objIndx)}>
+      </div>
+      :
+      <></>
+    )
+  }
+
+  const clickedEndConnectorCircle = (event, categoryIndex, itemIndex) => {
+    console.log("Event: ", event)
+    console.log(" Clicked end connector circle: ", categoryIndex, " item index: ", itemIndex);
+    setPoints({
+      x1: event.clientX,
+      y1: event.clientY
+    })
+    document.addEventListener('mousemove', addMouseMoveEvent)
+  }
+
+  // Track the mouse movement so we can go from and end connector
+  // to the mouse position
+  const addMouseMoveEvent = (event) => {
+    console.log("Add mouse move event ", event)
+    setPoints({
+      x2: event.clientX,
+      y2: event.clientY
+    })
   }
 
   const addItemsToCategory = (index) => {
@@ -35,7 +80,22 @@ const App = () => {
     setCategories(categories.map((item, indx) => {
       return index === indx ? {...item} : item
     }))
-  };
+  }
+
+  // const submitCategoryForm = (values, { setSubmiting }) => {
+  //   console.log("Submit: ", values.category)
+
+  //   setCategories(
+  //     categories.concat({
+  //       category: values.category,
+  //       values: [],
+  //       prev: null,
+  //       next: null
+  //     })
+  //   )
+
+  //   setSubmitting(false)
+  // }
 
   return (
     <div className="App bg-blue-300 overflow-y-none">
@@ -44,12 +104,14 @@ const App = () => {
         onSubmit={(values, { setSubmitting }) => {
           console.log("Submit: ", values.category)
 
-          setCategories(categories.concat({
-            category: values.category,
-            values: [],
-            prev: null,
-            next: null
-          }))
+          setCategories(
+            categories.concat({
+              category: values.category,
+              values: [],
+              prev: null,
+              next: null
+            })
+          )
           setSubmitting(false)
         }}
       >
@@ -110,14 +172,10 @@ const App = () => {
                   {item.values.map((obj, objIndx) => {
                     return <li key={`${item.category}-${index}-${objIndx}`}
                       className="flex m-2 p-2 bg-gray-50 rounded">
-                      <div className="bg-gray-300 rounded-full w-1/5 cursor-move"
-                        onClick={() => clickedStartConnectorCircle(index, objIndx)}>
-                      </div>
+                      {createStartConnectorCircle(index, objIndx)}
                       <div className="w-1/2">Key</div>
                       <div className="w-1/2">Value</div>
-                      <div className="bg-gray-300 rounded-full w-1/5 cursor-move" 
-                        onClick={() => clickedEndConnectorCircle(index, objIndx)}>
-                      </div>
+                      {createEndConnectorCircle(index, objIndx)}
                     </li>
                   })}
                   </ul>
@@ -127,6 +185,11 @@ const App = () => {
           </ul>
         </div>
       </div>
+
+      <Path 
+        x1={points.x1} y1={points.y1}
+        x2={points.x2} y2={points.y2} 
+      />
 
       {/* <Viewbox>
         <Circle fill="hotpink" 
