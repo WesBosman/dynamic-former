@@ -6,8 +6,10 @@ import './App.css';
 
 const App = () => {
   const [points, setPoints] = useState({
-    x1: 0, y1: 0,
-    x2: 0, y2: 0
+    x1: 0, 
+    y1: 0,
+    x2: 0, 
+    y2: 0
   });
 
   const [categories, setCategories] = useState([]);
@@ -17,17 +19,26 @@ const App = () => {
     return (
       index > 0 
       ?
-      <div className="bg-gray-300 rounded-full w-1/5 cursor-move"
-        onClick={(event) => clickedStartConnectorCircle(event, index, objIndx)}>
-      </div> 
+      <div className="w-1/5">
+        <div className="bg-gray-300 rounded-full cursor-move w-10 h-10 m-auto"
+          onClick={(event) => clickedStartConnectorCircle(event, index, objIndx)}>
+        </div> 
+      </div>
       : 
-      <></>
+      <div className="w-1/5"></div>
     )
   }
 
   const clickedStartConnectorCircle = (event, categoryIndex, itemIndex) => {
-    console.log("Event: ", event)
+    // console.log("Event: ", event)
     console.log(" Clicked start connector circle: ", categoryIndex, " item index: ", itemIndex);
+    console.log("Clicked start connector: ", event.clientX, " , ", event.clientY)
+    setPoints({
+      x1: points.x1,
+      y1: points.y1,
+      x2: event.clientX,
+      y2: event.clientY
+    })
   }
 
   // Do not create the end connector circle if the category is last
@@ -35,22 +46,27 @@ const App = () => {
     return (
       index < categories.length - 1
       ?
-      <div className="bg-gray-300 rounded-full w-1/5 cursor-move" 
-        onClick={(event) => clickedEndConnectorCircle(event, index, objIndx)}>
+      <div className="w-1/5">
+        <div className="bg-gray-300 rounded-full cursor-move w-10 h-10 m-auto" 
+          onClick={(event) => clickedEndConnectorCircle(event, index, objIndx)}>
+        </div>
       </div>
       :
-      <></>
+      <div className="w-1/5"></div>
     )
   }
 
   const clickedEndConnectorCircle = (event, categoryIndex, itemIndex) => {
-    console.log("Event: ", event)
+    // console.log("Event: ", event)
     console.log(" Clicked end connector circle: ", categoryIndex, " item index: ", itemIndex);
+    console.log("Clicked end circle: ", event.clientX, " , ", event.clientY)
     setPoints({
       x1: event.clientX,
-      y1: event.clientY
+      y1: event.clientY,
+      x2: points.x2,
+      y2: points.y2
     })
-    document.addEventListener('mousemove', addMouseMoveEvent)
+    // document.addEventListener('mousemove', addMouseMoveEvent)
   }
 
   // Track the mouse movement so we can go from and end connector
@@ -58,6 +74,8 @@ const App = () => {
   const addMouseMoveEvent = (event) => {
     console.log("Add mouse move event ", event)
     setPoints({
+      x1: points.x1,
+      y1: points.y1,
       x2: event.clientX,
       y2: event.clientY
     })
@@ -152,16 +170,16 @@ const App = () => {
           </div>
         )}
       </Formik>
-      
+
       <div className="w-screen h-screen bg-gray-100 overflow-x-auto">
         <div className="container mx-10">
           <ul className="py-4 flex justify-start gap-8">
             {categories.map((item, index) => {
-              console.log("Item: ", item)
+              // console.log("Item: ", item)
 
               return (
-                <div className="w-96 bg-gray-200 rounded">
-                  <li key={index} className="flex justify-between items-center bg-blue-500 text-white rounded-t-sm">
+                <div key={index} className="w-96 bg-gray-200 rounded">
+                  <li className="flex justify-between items-center bg-blue-500 text-white rounded-t-sm">
                     <span className="px-4">{item.category}</span>
                     <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                       onClick={() => addItemsToCategory(index)}>
@@ -173,8 +191,14 @@ const App = () => {
                     return <li key={`${item.category}-${index}-${objIndx}`}
                       className="flex m-2 p-2 bg-gray-50 rounded">
                       {createStartConnectorCircle(index, objIndx)}
-                      <div className="w-1/2">Key</div>
-                      <div className="w-1/2">Value</div>
+                      <div className="flex flex-col w-3/5">
+                        <div className="">
+                          <label>Key</label>
+                        </div>
+                        <div className="">
+                          <label>Value</label>
+                        </div>
+                      </div>
                       {createEndConnectorCircle(index, objIndx)}
                     </li>
                   })}
@@ -187,26 +211,9 @@ const App = () => {
       </div>
 
       <Path 
-        x1={points.x1} y1={points.y1}
-        x2={points.x2} y2={points.y2} 
+          x1={points.x1} y1={points.y1}
+          x2={points.x2} y2={points.y2} 
       />
-
-      {/* <Viewbox>
-        <Circle fill="hotpink" 
-          cx="30" 
-          cy="30" 
-          radius="30"
-        />
-        <Rectangle 
-          fill="transparent"
-          stroke="green"
-          strokeWidth="5"
-          x="50"
-          height="50"
-          width="100"
-          radius="10"
-        />
-      </Viewbox> */}
     </div>
   );
 }
