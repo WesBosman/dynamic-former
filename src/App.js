@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Formik } from 'formik';
 import Path from './components/Path.js';
+import Card from './components/Card.js';
 import './App.css';
 
 const App = () => {
@@ -188,19 +189,22 @@ const App = () => {
                   </li>
                   <ul>
                   {item.values.map((obj, objIndx) => {
-                    return <li key={`${item.category}-${index}-${objIndx}`}
-                      className="flex m-2 p-2 bg-gray-50 rounded">
-                      {createStartConnectorCircle(index, objIndx)}
-                      <div className="flex flex-col w-3/5">
-                        <div className="">
-                          <label>Key</label>
-                        </div>
-                        <div className="">
-                          <label>Value</label>
-                        </div>
-                      </div>
-                      {createEndConnectorCircle(index, objIndx)}
-                    </li>
+                    return <Card />
+                    // <li key={`${item.category}-${index}-${objIndx}`}
+                    //   className="flex m-2 p-2 bg-gray-50 rounded">
+                    //   {createStartConnectorCircle(index, objIndx)}
+                    //   <div className="flex flex-col w-3/5">
+                    //     <div className="flex justify-between py-2">
+                    //       <label>Key</label>
+                    //       <input type="text" value={objIndx} className="text-center"/>
+                    //     </div>
+                    //     <div className="flex justify-between py-2">
+                    //       <label>Value</label>
+                    //       <input type="text" value=""/>
+                    //     </div>
+                    //   </div>
+                    //   {createEndConnectorCircle(index, objIndx)}
+                    // </li>
                   })}
                   </ul>
                 </div>
@@ -210,10 +214,10 @@ const App = () => {
         </div>
       </div>
 
-      <Path 
+      {/* <Path 
           x1={points.x1} y1={points.y1}
           x2={points.x2} y2={points.y2} 
-      />
+      /> */}
     </div>
   );
 }
